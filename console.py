@@ -56,8 +56,8 @@ class HBNBCommand(cmd.Cmd):
             "longitude",
         ],
         "Amenity": ["id", "created_at", "updated_at", "name"],
-        "Review": ["id", "created_at", "updated_at",
-                   "place_id", "user_id", "text"],
+        "Review": [
+            "id", "created_at", "updated_at", "place_id", "user_id", "text"],
     }
 
     dot_cmds = ["all", "count", "show", "destroy", "update"]
@@ -160,10 +160,8 @@ class HBNBCommand(cmd.Cmd):
         """cast string to float or int if possible"""
         is_valid_value = True
         # To be a valid string it must be of at least length 2 i.e. ""
-        # To be a valid string it must begin and end with
-        # double quoatation i.e. "sdsds"
-        if len(value) >= 2 and value[0] == '"'\
-                and value[len(value) - 1] == '"':
+        if len(value) >= 2 and value[0] == '"' and \
+                value[len(value) - 1] == '"':
             value = value[1:-1]
             value = value.replace("_", " ")
             value = value.replace('"', '"')
@@ -205,8 +203,8 @@ class HBNBCommand(cmd.Cmd):
                 pass
 
         new_instance = HBNBCommand.classes[class_name](**dict_params)
-        if new_instance.save():
-            print(new_instance.id)
+        storage.save()
+        print(new_instance.id)
 
     def help_create(self):
         """Help information for the create method"""
@@ -288,12 +286,13 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage.all().items():
+            for k, v in storage._FileStorage__objects.items():
                 if k.split(".")[0] == args:
                     print_list.append(str(v))
         else:
-            for k, v in storage.all().items():
+            for k, v in storage._FileStorage__objects.items():
                 print_list.append(str(v))
+
         for obj in print_list:
             print(obj)
 
