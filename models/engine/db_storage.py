@@ -1,8 +1,15 @@
 #!/usr/bin/python3
 """This module defines a class to manage file storage for hbnb clone"""
-from models.base_model import Base, State, City
+from models.user import User
+from models.place import Place
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.review import Review
+from models.base_model import Base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.exc import IntegrityError
 from os import getenv
 
 
@@ -21,8 +28,8 @@ class DBStorage:
         hb_env = getenv("HBNB_ENV")
 
         self.__engine = create_engine(
-            f"mysql+mysqldb://{hb_user}:{hb_pwd}@\
-                {hb_host}/{hb_db}", pool_pre_ping=True
+            f"mysql+mysqldb://{hb_user}:{hb_pwd}@{hb_host}/{hb_db}",
+            pool_pre_ping=True,
         )
 
         if hb_env == "test":
@@ -37,11 +44,10 @@ class DBStorage:
 
     def all(self, cls=None):
         """
-        query all classes or specific one
-        """
-        allClasses = [State, City]
+        query all classes or specific one"""
+        allClasses = [User, Place, State, City, Amenity, Review]
         result = {}
-        if cls:
+        if cls is not None:
             for obj in self.__session.query(cls).all():
                 ClassName = obj.__class__.__name__
                 keyName = ClassName + "." + obj.id
@@ -61,8 +67,11 @@ class DBStorage:
 
     def save(self):
         """commit all changes"""
-        if obj:
+        try:
             self.__session.commit()
+            return True
+        except IntegrityError:
+            return False
 
     def delete(self, obj=None):
         """delete from the current database session"""
