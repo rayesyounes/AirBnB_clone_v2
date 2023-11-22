@@ -205,8 +205,8 @@ class HBNBCommand(cmd.Cmd):
                 pass
 
         new_instance = HBNBCommand.classes[class_name](**dict_params)
-        if(new_instance.save()):
-            print(new_instance.id)
+        new_instance.save()
+        print(new_instance.id)
 
     def help_create(self):
         """Help information for the create method"""
@@ -294,7 +294,8 @@ class HBNBCommand(cmd.Cmd):
         else:
             for k, v in storage.all().items():
                 print_list.append(str(v))
-        print(print_list)
+        for o in print_list:
+            print(o)
 
     def help_all(self):
         """Help information for the all command"""
