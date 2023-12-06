@@ -48,12 +48,14 @@ class HBNBCommand(cmd.Cmd):
             "city_id",
             "user_id",
             "name",
+            "description",
             "number_rooms",
             "number_bathrooms",
             "max_guest",
             "price_by_night",
             "latitude",
             "longitude",
+            "amenity_ids"
         ],
         "Amenity": ["id", "created_at", "updated_at", "name"],
         "Review": ["id", "created_at", "updated_at",
@@ -166,7 +168,6 @@ class HBNBCommand(cmd.Cmd):
                 and value[len(value) - 1] == '"':
             value = value[1:-1]
             value = value.replace("_", " ")
-            value = value.replace('"', '"')
         else:
             try:
                 if "." in value:
@@ -191,7 +192,7 @@ class HBNBCommand(cmd.Cmd):
         if class_name not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-        dict_params = {}
+        new_instance = HBNBCommand.classes[class_name]()
         for param_index in range(1, len(args_array)):
             param_array = args_array[param_index].split("=")
             if len(param_array) == 2:
@@ -200,13 +201,11 @@ class HBNBCommand(cmd.Cmd):
                     continue
                 value = self.parse_value(param_array[1])
                 if value is not None:
-                    dict_params[key] = value
+                    setattr(new_instance, key, value)
             else:
                 pass
-
-        new_instance = HBNBCommand.classes[class_name](**dict_params)
-        if(new_instance.save()):
-            print(new_instance.id)
+        new_instance.save()
+        print(new_instance.id)
 
     def help_create(self):
         """Help information for the create method"""
@@ -304,7 +303,7 @@ class HBNBCommand(cmd.Cmd):
     def do_count(self, args):
         """Count current number of class instances"""
         count = 0
-        for k, v in storage._FileStorage__objects.items():
+        for k, v in storage.all().items():
             if args == k.split(".")[0]:
                 count += 1
         print(count)

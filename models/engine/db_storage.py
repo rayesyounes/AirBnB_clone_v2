@@ -9,7 +9,6 @@ from models.review import Review
 from models.base_model import Base
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, scoped_session
-from sqlalchemy.exc import IntegrityError, OperationalError
 from os import getenv
 
 
@@ -36,6 +35,7 @@ class DBStorage:
             Base.metadata.drop_all(self.__engine)
 
     def reload(self):
+        """ reload method """
         Base.metadata.create_all(self.__engine)
         Session = scoped_session(
             sessionmaker(bind=self.__engine, expire_on_commit=False)
@@ -67,12 +67,7 @@ class DBStorage:
 
     def save(self):
         """commit all changes"""
-        try:
-            self.__session.commit()
-            return True
-        #except (IntegrityError, OperationalError):
-        except Exception:
-            return False
+        self.__session.commit()
 
     def delete(self, obj=None):
         """delete from the current database session"""
