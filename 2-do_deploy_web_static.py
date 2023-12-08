@@ -24,21 +24,17 @@ def do_pack():
 
 @task
 def do_deploy(archive_path):
+    """ method doc
+        fab -f 2-do_deploy_web_static.py do_deploy:
+        archive_path=versions/web_static_20231004201306.tgz
+        -i ~/.ssh/id_rsa -u ubuntu
+    """
     try:
         if os.path.exists(archive_path) is False:
-            print(f"Archive file does not exist: {archive_path}")
             return False
-
         fn_with_ext = os.path.basename(archive_path)
         fn_no_ext, ext = os.path.splitext(fn_with_ext)
         dpath = "/data/web_static/releases/"
-
-        print(f"Archive Path: {archive_path}")
-        print(f"File with Extension: {fn_with_ext}")
-        print(f"Filename without Extension: {fn_no_ext}")
-        print(f"Remote Deployment Path: {dpath}")
-        print(f"Temporary Archive Path: /tmp/{fn_with_ext}")
-
         put(archive_path, "/tmp/")
         run(f"rm -rf {dpath}{fn_no_ext}/")
         run(f"mkdir -p {dpath}{fn_no_ext}/")
@@ -48,10 +44,7 @@ def do_deploy(archive_path):
         run(f"rm -rf {dpath}{fn_no_ext}/web_static")
         run(f"rm -rf /data/web_static/current")
         run(f"ln -s {dpath}{fn_no_ext}/ /data/web_static/current")
-
         print("New version deployed!")
         return True
-    except Exception as e:
-        print(f"Deployment failed: {e}")
+    except Exception:
         return False
-
