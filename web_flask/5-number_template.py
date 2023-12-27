@@ -4,8 +4,6 @@ from flask import Flask
 from flask import render_template
 
 app = Flask(__name__)
-import { onSnapshot } from "firebase/firestore"
-import { notesCollection } from "./firebase"
 
 @app.route("/", strict_slashes=False)
 def hello():
