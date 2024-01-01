@@ -75,4 +75,3 @@ class FileStorage:
     def close(self):
         """doc meth"""
         self.reload()
-0 comments on commit f95ea10
